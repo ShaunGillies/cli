@@ -2,7 +2,7 @@
 // Copyright (c) 2015 by Shipeng Feng.
 // Licensed under the BSD License, see LICENSE for more details.
 
-use std::os;
+use std::env;
 use std::path::Path;
 use std::slice::SliceConcatExt;
 
@@ -160,7 +160,7 @@ impl Command {
 
     /// This is the way to run one command application.
     pub fn run(&self) {
-        let mut args = os::args();
+        let mut args = env::args();
         let program = args.remove(0);
         let program_path = Path::new(program.as_slice());
         let program_name = program_path.file_name().unwrap().to_str().unwrap();

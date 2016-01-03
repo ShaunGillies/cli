@@ -2,18 +2,18 @@
 // Copyright (c) 2015 by Shipeng Feng.
 // Licensed under the BSD License, see LICENSE for more details.
 
-use std::old_io;
+extern crate tempdir;
+
 use std::fmt;
 use std::ascii::AsciiExt;
 use std::io;
 use std::str;
 use std::process;
 use std::io::{Read, Write};
-use std::old_path::GenericPath;
 use std::collections::HashMap;
 use std::path::Path;
 use std::fs::File;
-use std::old_io::TempDir;
+use self::tempdir::TempDir;
 
 use libc;
 use libc::funcs::bsd44::ioctl;
@@ -218,7 +218,7 @@ fn build_prompt_text(text: &str, suffix: &str, show_default: bool,
 
 fn get_prompt_input(prompt_text: &str, hide_input: bool) -> String {
     print!("{}", prompt_text);
-    let input = old_io::stdin().read_line().ok().expect("Failed to read line");
+    let input = io::stdin().read_line().ok().expect("Failed to read line");
     return input.trim_right_matches("\n").to_string();
 }
 
@@ -344,7 +344,7 @@ pub fn isatty() -> bool {
 
 /// Clears the terminal screen.
 pub fn clear() {
-    old_io::stdout().write_all("\x1b[2J\x1b[1;1H".as_bytes()).unwrap()
+    io::stdout().write_all("\x1b[2J\x1b[1;1H".as_bytes()).unwrap()
 }
 
 
@@ -363,7 +363,7 @@ const AFTER_BAR: &'static str = "\x1b[?25h\n";
 ///
 /// let mut bar = ProgressBar::new(100, "Demo");
 /// bar.begin();
-/// for _ in range(0, 100) {
+/// for _ in 0..100 {
 ///     // Do something here
 ///     bar.next();
 /// }
@@ -420,7 +420,7 @@ impl ProgressBar {
         if self.is_hidden {
             return
         }
-        old_io::stdout().write_all(AFTER_BAR.as_bytes()).unwrap()
+        io::stdout().write_all(AFTER_BAR.as_bytes()).unwrap()
     }
 
     fn percent(&self) -> f32 {
@@ -463,10 +463,10 @@ impl ProgressBar {
         let mut bar: Vec<u8> = vec![];
         let fill_length = (self.percent() * self.width as f32) as isize;
         let empty_length = self.width - fill_length;
-        for _ in range(0, fill_length) {
+        for _ in 0..fill_length {
             bar.push(self.fill_char);
         }
-        for _ in range(0, empty_length) {
+        for _ in 0..empty_length {
             bar.push(self.empty_char);
         }
         let bar_str = str::from_utf8(bar.as_slice()).unwrap();
@@ -484,18 +484,18 @@ impl ProgressBar {
         if self.is_hidden {
             return
         }
-        old_io::stdout().write_all(BEFORE_BAR.as_bytes()).unwrap();
+        io::stdout().write_all(BEFORE_BAR.as_bytes()).unwrap();
         let last_line_width = self.last_line_width;
         let line = self.format_progress_line();
         let line_width = line.len();
         self.last_line_width = line_width;
-        old_io::stdout().write_all(line.as_bytes()).unwrap();
+        io::stdout().write_all(line.as_bytes()).unwrap();
         if last_line_width > line_width {
             let mut clear_string = "".to_string();
-            for _ in range(0, last_line_width - line_width) {
+            for _ in 0..last_line_width - line_width {
                 clear_string = clear_string + " ";    
             }
-            old_io::stdout().write_all(clear_string.as_bytes()).unwrap();
+            io::stdout().write_all(clear_string.as_bytes()).unwrap();
         }
     }
 
@@ -583,7 +583,7 @@ impl Editor {
         let mut edited_file = File::open(filename).unwrap();
         let mut edited_text = String::new();
         edited_file.read_to_string(&mut edited_text).unwrap();
-        old_io::fs::unlink(&filepath).unwrap();
+        // io::fs::unlink(&filepath).unwrap();
         
         return edited_text;
     }
