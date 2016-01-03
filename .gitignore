@@ -11,7 +11,6 @@
 /target/
 /Cargo.lock
 
-# Added by Shipeng Feng
+# Added by Shipeng Feng. Modified by Shaun Gillies.
 Cargo.lock
 target
-*.swp
