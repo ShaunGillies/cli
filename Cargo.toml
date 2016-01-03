@@ -1,13 +1,13 @@
 [package]
 
-name = "cli"
+name = "clt"
 version = "0.0.1"
 authors = ["Shaun Gillies <me@shaungillies.org>"]
-license = "GPLv3"
+license = "MIT License"
 readme = "README.md"
 repository = "https://github.com/shaungillies/cli"
 homepage = "https://github.com/shaungillies/cli"
-description = "One Rust crate for creating beautiful command line applications."
+description = "Rust crate for creating beautiful command line applications."
 
 [dependencies]
 getopts = "*"
