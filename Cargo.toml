@@ -2,12 +2,11 @@
 
 name = "cli"
 version = "0.0.2"
-authors = ["Shipeng Feng <fsp261@gmail.com>"]
-license = "BSD-3-Clause"
+authors = ["Shaun Gillies <me@shaungillies.org>"]
+license = "GPLv3"
 readme = "README.md"
-repository = "https://github.com/fengsp/cli"
-homepage = "https://github.com/fengsp/cli"
-documentation = "http://fengsp.github.io/cli"
+repository = "https://github.com/shaungillies/cli"
+homepage = "https://github.com/shaungillies/cli"
 description = "One Rust crate for creating beautiful command line applications."
 
 [dependencies]
