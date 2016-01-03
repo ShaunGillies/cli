@@ -2,17 +2,16 @@
 // Copyright (c) 2015 by Shipeng Feng.
 // Licensed under the BSD License, see LICENSE for more details.
 
-//! Cli is a Rust crate for creating beautiful command line applications.
+//! clt is a Rust crate for creating beautiful command line applications.
 
-#![crate_name = "cli"]
+#![crate_name = "clt"]
 #![crate_type = "lib"]
 #![doc(html_logo_url = "http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
        html_favicon_url = "http://www.rust-lang.org/favicon.ico",
-       html_root_url = "http://fengsp.github.io/cli/")]
+       html_root_url = "http://shaungillies.github.io/clt/")]
 #![deny(non_camel_case_types)]
 
 extern crate libc;
-extern crate time;
 extern crate getopts;
 
 /* public api */

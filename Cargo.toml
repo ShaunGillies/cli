@@ -1,15 +1,15 @@
 [package]
 
-name = "cli"
-version = "0.0.2"
-authors = ["Shipeng Feng <fsp261@gmail.com>"]
+name = "clt"
+version = "0.0.6"
+authors = ["NecroTechno <necrotechno@riseup.net>"]
 license = "BSD-3-Clause"
 readme = "README.md"
-repository = "https://github.com/fengsp/cli"
-homepage = "https://github.com/fengsp/cli"
-documentation = "http://fengsp.github.io/cli"
-description = "One Rust crate for creating beautiful command line applications."
+repository = "https://github.com/NecroTechno/clt"
+documentation = "https://docs.rs/clt/"
+description = "Rust crate for efficiently creating command line applications."
 
 [dependencies]
-getopts = "*"
-time = "*"
+getopts = "0.2.14"
+tempdir = "0.3.4"
+libc = "0.2.12"

@@ -2,22 +2,22 @@
 // Copyright (c) 2015 by Shipeng Feng.
 // Licensed under the BSD License, see LICENSE for more details.
 
-use std::old_io;
+extern crate tempdir;
+
 use std::fmt;
 use std::ascii::AsciiExt;
 use std::io;
 use std::str;
 use std::process;
 use std::io::{Read, Write};
-use std::old_path::GenericPath;
 use std::collections::HashMap;
 use std::path::Path;
 use std::fs::File;
-use std::old_io::TempDir;
+use std::time::{Instant, Duration, SystemTime, UNIX_EPOCH};
+use self::tempdir::TempDir;
 
 use libc;
-use libc::funcs::bsd44::ioctl;
-use time;
+use libc::ioctl;
 
 pub use self::Color::{
     Black,
@@ -77,11 +77,13 @@ impl Color {
 /// that at the end of the string a reset code is issued.  Examples:
 ///
 /// ```rust,no_run
-/// use cli::{Style, Red};
+/// use clt::{Style, Red};
 ///
-/// let mut text = Style::new(String::from_str("hello"));
-/// text.fg(Red);
-/// println!("{}", text);
+/// let mut text = String::new();
+/// text.push_str("hello");
+/// let mut text_styled = Style::new(text);
+/// text_styled.fg(Red);
+/// println!("{}", text_styled);
 /// ```
 ///
 pub struct Style {
@@ -195,7 +197,7 @@ impl fmt::Display for Style {
                 try!(f.write_str("\x1b[27m"));
             }
         }
-        try!(f.write_str(self.text.as_slice()));
+        try!(f.write_str(&self.text));
         // Currently we always reset.
         try!(f.write_str("\x1b[0m"));
 
@@ -218,7 +220,8 @@ fn build_prompt_text(text: &str, suffix: &str, show_default: bool,
 
 fn get_prompt_input(prompt_text: &str, hide_input: bool) -> String {
     print!("{}", prompt_text);
-    let input = old_io::stdin().read_line().ok().expect("Failed to read line");
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).ok().expect("Failed to read line");
     return input.trim_right_matches("\n").to_string();
 }
 
@@ -238,8 +241,8 @@ pub fn prompt(text: &str, default: Option<&str>, hide_input: bool, confirmation:
 
     let mut prompt_input: String;
     loop {
-        prompt_input = get_prompt_input(prompt_text.as_slice(), hide_input);
-        if prompt_input != String::from_str("") {
+        prompt_input = get_prompt_input(&prompt_text, hide_input);
+        if prompt_input != String::new() {
             break
         } else if default.is_some() {
             return default.unwrap().to_string();
@@ -252,7 +255,7 @@ pub fn prompt(text: &str, default: Option<&str>, hide_input: bool, confirmation:
     let mut confirm_input: String;
     loop {
         confirm_input = get_prompt_input("Repeat for confirmation: ", hide_input);
-        if confirm_input != String::from_str("") {
+        if confirm_input != String::new() {
             break
         }
     }
@@ -279,7 +282,7 @@ pub fn confirm(text: &str, default: bool, prompt_suffix: &str, show_default: boo
     let prompt_text = build_prompt_text(text, prompt_suffix, show_default, default_string);
 
     loop {
-        let prompt_input = get_prompt_input(prompt_text.as_slice(), false).to_ascii_lowercase();
+        let prompt_input = get_prompt_input(&prompt_text, false).to_ascii_lowercase();
         match prompt_input.trim() {
             "y" | "yes" => { return true; },
             "n" | "no"  => { return false; },
@@ -304,7 +307,7 @@ const TIOCGWINSZ: libc::c_ulong = 0x40087468;
 /// `(width, height)` in columns and rows, usage example:
 ///
 /// ```rust,no_run
-/// use cli::get_terminal_size;
+/// use clt::get_terminal_size;
 ///
 /// let (width, height) = get_terminal_size().unwrap();
 /// ```
@@ -319,14 +322,14 @@ pub fn get_terminal_size() -> io::Result<(isize, isize)> {
     let r = unsafe { ioctl(libc::STDOUT_FILENO, TIOCGWINSZ, &w) };
     match r {
         0 => Ok((w.ws_col as isize, w.ws_row as isize)),
-        code => Err(io::Error::from_os_error(code)),
+        code => Err(io::Error::from_raw_os_error(code)),
     }
 }
 
 
 /// Show text via an pager.
 pub fn print_via_pager(text: &str) {
-    let mut pager = process::Command::new("less").stdin(process::Stdio::capture())
+    let mut pager = process::Command::new("less").stdin(process::Stdio::piped())
                                                  .spawn()
                                                  .unwrap_or_else(|e| { panic!("failed to spawn less: {}", e) });
     pager.stdin.as_mut().unwrap().write_all(text.as_bytes())
@@ -344,12 +347,7 @@ pub fn isatty() -> bool {
 
 /// Clears the terminal screen.
 pub fn clear() {
-    old_io::stdout().write_all("\x1b[2J\x1b[1;1H".as_bytes()).unwrap()
-}
-
-
-fn current_ts() -> i64 {
-    time::get_time().sec
+    io::stdout().write_all("\x1b[2J\x1b[1;1H".as_bytes()).unwrap()
 }
 
 
@@ -359,54 +357,54 @@ const AFTER_BAR: &'static str = "\x1b[?25h\n";
 /// Showing a progress bar.  Examples:
 ///
 /// ```rust,no_run
-/// use cli::ProgressBar;
+/// use clt::ProgressBar;
 ///
 /// let mut bar = ProgressBar::new(100, "Demo");
 /// bar.begin();
-/// for _ in range(0, 100) {
+/// for _ in 0..100 {
 ///     // Do something here
 ///     bar.next();
 /// }
 /// bar.end();
 /// ```
 ///
-pub struct ProgressBar {
+pub struct ProgressBar<'a> {
     pub length: isize,  // the number of items to iterate over
-    pub label: &'static str,  // the label to show next to the progress bar
-    pub fill_char: u8,  // the character to use to show the filled part
-    pub empty_char: u8,  // the character to use to show the non-filled part
+    pub label: &'a str,  // the label to show next to the progress bar
+    pub fill_char: char,  // the character to use to show the filled part
+    pub empty_char: char,  // the character to use to show the non-filled part
     pub width: isize,  // the width of the progress bar in characters
     started: bool,
     finished: bool,
     pos: isize,
-    start: i64,
+    start: Instant,
     is_hidden: bool,
     avgs: Vec<f32>,
     last_line_width: usize,
 }
 
-impl ProgressBar {
+impl<'a> ProgressBar<'a> {
     /// Create a new progressbar.
-    pub fn new(length: isize, label: &'static str) -> ProgressBar {
+    pub fn new(length: isize, label: &'a str) -> ProgressBar {
         ProgressBar {
             length: length,
             label: label,
-            fill_char: 35,
-            empty_char: 32,
+            fill_char: '#',
+            empty_char: ' ',
             width: 30,
             started: false,
             finished: false,
             pos: 0,
-            start: current_ts(),
+            start: Instant::now(),
             is_hidden: !isatty(),
-            avgs: Vec::new(),
+            avgs: Vec::with_capacity(11),
             last_line_width: 0,
         }
     }
 
     pub fn begin(&mut self) {
         self.started = true;
-        self.start = current_ts();
+        self.start = Instant::now();
         self.render_progress();
     }
 
@@ -420,7 +418,7 @@ impl ProgressBar {
         if self.is_hidden {
             return
         }
-        old_io::stdout().write_all(AFTER_BAR.as_bytes()).unwrap()
+        io::stdout().write_all(AFTER_BAR.as_bytes()).unwrap()
     }
 
     fn percent(&self) -> f32 {
@@ -455,24 +453,27 @@ impl ProgressBar {
     }
 
     fn format_estimate_time(&self) -> String {
-        let tm = time::at_utc(time::Timespec::new(self.estimate_time() as i64, 0));
-        time::strftime("%H:%M:%S", &tm).unwrap()
+        let tm = match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(dur) => dur,
+            Err(err) => err.duration(),
+        };
+        let secs = tm.as_secs();
+        format!("{:02}:{:02}:{:02}", secs / 3600, (secs / 60) % 60, secs % 60)
     }
 
     fn format_progress_line(&self) -> String {
-        let mut bar: Vec<u8> = vec![];
+        let mut bar_str = String::with_capacity(self.width as usize);
         let fill_length = (self.percent() * self.width as f32) as isize;
         let empty_length = self.width - fill_length;
-        for _ in range(0, fill_length) {
-            bar.push(self.fill_char);
+        for _ in 0..fill_length {
+            bar_str.push(self.fill_char);
         }
-        for _ in range(0, empty_length) {
-            bar.push(self.empty_char);
+        for _ in 0..empty_length {
+            bar_str.push(self.empty_char);
         }
-        let bar_str = str::from_utf8(bar.as_slice()).unwrap();
 
         let mut info: String;
-        if self.finished || (current_ts() - self.start) < 1i64 {
+        if self.finished || self.start.elapsed().as_secs() == 0 {
             info = format!("{}", self.format_percent());
         } else {
             info = format!("{}  {}", self.format_percent(), self.format_estimate_time());
@@ -484,18 +485,18 @@ impl ProgressBar {
         if self.is_hidden {
             return
         }
-        old_io::stdout().write_all(BEFORE_BAR.as_bytes()).unwrap();
+        io::stdout().write_all(BEFORE_BAR.as_bytes()).unwrap();
         let last_line_width = self.last_line_width;
         let line = self.format_progress_line();
         let line_width = line.len();
         self.last_line_width = line_width;
-        old_io::stdout().write_all(line.as_bytes()).unwrap();
+        io::stdout().write_all(line.as_bytes()).unwrap();
         if last_line_width > line_width {
             let mut clear_string = "".to_string();
-            for _ in range(0, last_line_width - line_width) {
-                clear_string = clear_string + " ";    
+            for _ in 0..last_line_width - line_width {
+                clear_string = clear_string + " ";
             }
-            old_io::stdout().write_all(clear_string.as_bytes()).unwrap();
+            io::stdout().write_all(clear_string.as_bytes()).unwrap();
         }
     }
 
@@ -507,7 +508,7 @@ impl ProgressBar {
         if self.pos >= self.length {
             self.finished = true;
         }
-        let avg: f32 = (current_ts() - self.start) as f32 / self.pos as f32;
+        let avg: f32 = self.start.elapsed().as_secs() as f32 / self.pos as f32;
         self.avgs.insert(0, avg);
         self.avgs.truncate(10);
         self.render_progress();
@@ -516,14 +517,14 @@ impl ProgressBar {
 
 
 /// One editor for you to edit the given text or file.
-pub struct Editor {
-    editor: &'static str,
-    env_map: HashMap<&'static str, &'static str>,
+pub struct Editor<'a, 'k, 'v> {
+    editor: &'a str,
+    env_map: HashMap<&'k str, &'v str>,
 }
 
-impl Editor {
+impl<'a, 'k, 'v> Editor<'a, 'k, 'v> {
     /// Create one new editor.
-    pub fn new(editor: &'static str) -> Editor {
+    pub fn new(editor: &'a str) -> Editor {
         Editor {
             editor: editor,
             env_map: HashMap::new(),
@@ -531,14 +532,14 @@ impl Editor {
     }
 
     /// Inserts or updates an environment variable mapping.
-    pub fn env(&mut self, key: &'static str, value: &'static str) {
+    pub fn env(&mut self, key: &'k str, value: &'v str) {
         self.env_map.insert(key, value);
     }
 
     /// Edit a file.  Examples:
     ///
     /// ```rust,no_run
-    /// use cli::Editor;
+    /// use clt::Editor;
     ///
     /// let editor = Editor::new("vim");
     /// editor.edit_file("/path/to/myfile.py");
@@ -561,19 +562,20 @@ impl Editor {
     /// Edit some text.  Examples:
     ///
     /// ```rust,no_run
-    /// use cli::Editor;
+    /// use clt::Editor;
     ///
     /// let editor = Editor::new("vim");
-    /// let text = String::from_str("hello");
+    /// let mut text = String::new();
+    /// text.push_str("hello");
     /// let edited = editor.edit(text, ".txt");
     /// ```
     ///
     pub fn edit(&self, text: String, extension: &str) -> String {
-        let tmpdir = TempDir::new("cli").unwrap();
-        let tmpname = "cli_eidtor".to_string() + extension;
+        let tmpdir = TempDir::new("clt").unwrap();
+        let tmpname = "clt_editor".to_string() + extension;
         let mut filepath = tmpdir.path().clone();
-        filepath.push(tmpname.as_slice());
-        let filename = filepath.as_str().unwrap();
+        filepath.join(&tmpname);
+        let filename = filepath.to_str().unwrap();
         let mut tmpfile = File::create(filename).unwrap();
         tmpfile.write(text.as_bytes()).unwrap();
         tmpfile.flush().unwrap();
@@ -583,8 +585,7 @@ impl Editor {
         let mut edited_file = File::open(filename).unwrap();
         let mut edited_text = String::new();
         edited_file.read_to_string(&mut edited_text).unwrap();
-        old_io::fs::unlink(&filepath).unwrap();
-        
+
         return edited_text;
     }
 }
