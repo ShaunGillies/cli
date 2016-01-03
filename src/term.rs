@@ -81,9 +81,11 @@ impl Color {
 /// ```rust,no_run
 /// use clt::{Style, Red};
 ///
-/// let mut text = Style::new(String::from_str("hello"));
-/// text.fg(Red);
-/// println!("{}", text);
+/// let mut text = String::new();
+/// text.push_str("hello");
+/// let mut text_styled = Style::new(text);
+/// text_styled.fg(Red);
+/// println!("{}", text_styled);
 /// ```
 ///
 pub struct Style {
@@ -567,7 +569,8 @@ impl Editor {
     /// use clt::Editor;
     ///
     /// let editor = Editor::new("vim");
-    /// let text = String::from_str("hello");
+    /// let mut text = String::new();
+    /// text.push_str("hello");
     /// let edited = editor.edit(text, ".txt");
     /// ```
     ///
