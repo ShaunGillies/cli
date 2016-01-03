@@ -1,3 +1,3 @@
-#Command Line Tools (clt)
+#Command Line Toolkit (clt)
 
-Command Line Tools is a Rust crate for creating beautiful command line applications. Forked from fengsp/cli.
+Command Line Toolkit is a Rust crate for creating beautiful command line applications. Forked from fengsp/cli.

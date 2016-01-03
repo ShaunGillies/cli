@@ -77,7 +77,7 @@ impl Color {
 /// that at the end of the string a reset code is issued.  Examples:
 ///
 /// ```rust,no_run
-/// use cli::{Style, Red};
+/// use clt::{Style, Red};
 ///
 /// let mut text = Style::new(String::from_str("hello"));
 /// text.fg(Red);
@@ -305,7 +305,7 @@ const TIOCGWINSZ: libc::c_ulong = 0x40087468;
 /// `(width, height)` in columns and rows, usage example:
 ///
 /// ```rust,no_run
-/// use cli::get_terminal_size;
+/// use clt::get_terminal_size;
 ///
 /// let (width, height) = get_terminal_size().unwrap();
 /// ```
@@ -360,7 +360,7 @@ const AFTER_BAR: &'static str = "\x1b[?25h\n";
 /// Showing a progress bar.  Examples:
 ///
 /// ```rust,no_run
-/// use cli::ProgressBar;
+/// use clt::ProgressBar;
 ///
 /// let mut bar = ProgressBar::new(100, "Demo");
 /// bar.begin();
@@ -539,7 +539,7 @@ impl Editor {
     /// Edit a file.  Examples:
     ///
     /// ```rust,no_run
-    /// use cli::Editor;
+    /// use clt::Editor;
     ///
     /// let editor = Editor::new("vim");
     /// editor.edit_file("/path/to/myfile.py");
@@ -562,7 +562,7 @@ impl Editor {
     /// Edit some text.  Examples:
     ///
     /// ```rust,no_run
-    /// use cli::Editor;
+    /// use clt::Editor;
     ///
     /// let editor = Editor::new("vim");
     /// let text = String::from_str("hello");
@@ -570,8 +570,8 @@ impl Editor {
     /// ```
     ///
     pub fn edit(&self, text: String, extension: &str) -> String {
-        let tmpdir = TempDir::new("cli").unwrap();
-        let tmpname = "cli_eidtor".to_string() + extension;
+        let tmpdir = TempDir::new("clt").unwrap();
+        let tmpname = "clt_editor".to_string() + extension;
         let mut filepath = tmpdir.path().clone();
         filepath.join(&tmpname);
         let filename = filepath.to_str().unwrap();
@@ -584,7 +584,6 @@ impl Editor {
         let mut edited_file = File::open(filename).unwrap();
         let mut edited_text = String::new();
         edited_file.read_to_string(&mut edited_text).unwrap();
-        // io::fs::unlink(&filepath).unwrap();
         
         return edited_text;
     }

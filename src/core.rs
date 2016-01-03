@@ -11,7 +11,7 @@ use types::{Params, CommandCallback};
 use types::{Options, Argument};
 use formatting::HelpFormatter;
 
-/// The command is the basic type of command line applications in cli.  This
+/// The command is the basic type of command line applications in clt.  This
 /// handles command line parsing.
 pub struct Command {
     name: String,  // The name of the command to use
