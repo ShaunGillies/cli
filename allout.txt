@@ -1,0 +1,342 @@
+   Compiling cli v0.0.1 (file:///home/shaun/Everything/Code/cli)
+src/formatting.rs:108:60: 108:68 error: use of unstable library feature 'convert': waiting on RFC revision (see issue #27729)
+src/formatting.rs:108         self.write(wrap_text(args, text_width, " ", indent.as_str()));
+                                                                                 ^~~~~~~~
+src/core.rs:16:1: 24:2 warning: struct is never used: `Command`, #[warn(dead_code)] on by default
+src/core.rs:16 pub struct Command {
+src/core.rs:17     name: String,  // The name of the command to use
+src/core.rs:18     callback: CommandCallback,  // The callback to execute
+src/core.rs:19     options: Vec<Options>,  // The options to register with this command
+src/core.rs:20     arguments: Vec<Argument>,  // The arguments to register with this command
+src/core.rs:21     help: String,  // The help message to use for this command
+               ...
+src/core.rs:17:5: 17:17 warning: struct field is never used: `name`, #[warn(dead_code)] on by default
+src/core.rs:17     name: String,  // The name of the command to use
+                   ^~~~~~~~~~~~
+src/core.rs:18:5: 18:30 warning: struct field is never used: `callback`, #[warn(dead_code)] on by default
+src/core.rs:18     callback: CommandCallback,  // The callback to execute
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~
+src/core.rs:19:5: 19:26 warning: struct field is never used: `options`, #[warn(dead_code)] on by default
+src/core.rs:19     options: Vec<Options>,  // The options to register with this command
+                   ^~~~~~~~~~~~~~~~~~~~~
+src/core.rs:20:5: 20:29 warning: struct field is never used: `arguments`, #[warn(dead_code)] on by default
+src/core.rs:20     arguments: Vec<Argument>,  // The arguments to register with this command
+                   ^~~~~~~~~~~~~~~~~~~~~~~~
+src/core.rs:21:5: 21:17 warning: struct field is never used: `help`, #[warn(dead_code)] on by default
+src/core.rs:21     help: String,  // The help message to use for this command
+                   ^~~~~~~~~~~~
+src/core.rs:22:5: 22:19 warning: struct field is never used: `epilog`, #[warn(dead_code)] on by default
+src/core.rs:22     epilog: String,  // Printed at the end of the help page
+                   ^~~~~~~~~~~~~~
+src/core.rs:23:5: 23:23 warning: struct field is never used: `short_help`, #[warn(dead_code)] on by default
+src/core.rs:23     short_help: String,  // The short help to use for this command, this is shown on the command listing of the parent command
+                   ^~~~~~~~~~~~~~~~~~
+src/core.rs:28:5: 38:6 warning: method is never used: `new`, #[warn(dead_code)] on by default
+src/core.rs:28     pub fn new(name: &str, callback: CommandCallback) -> Command {
+src/core.rs:29         Command {
+src/core.rs:30             name: name.to_string(),
+src/core.rs:31             callback: callback,
+src/core.rs:32             options: Vec::new(),
+src/core.rs:33             arguments: Vec::new(),
+               ...
+src/core.rs:41:5: 47:6 warning: method is never used: `option`, #[warn(dead_code)] on by default
+src/core.rs:41     pub fn option(&mut self, short_name: &'static str, long_name: &'static str, help: &'static str,
+src/core.rs:42                   is_flag: bool, is_bool_flag: bool, multiple: bool,
+src/core.rs:43                   required: bool, default: Option<&'static str>) {
+src/core.rs:44         let option = Options::new(short_name, long_name, help, is_flag,
+src/core.rs:45                                   is_bool_flag, multiple, required, default);
+src/core.rs:46         self.options.push(option);
+               ...
+src/core.rs:50:5: 53:6 warning: method is never used: `argument`, #[warn(dead_code)] on by default
+src/core.rs:50     pub fn argument(&mut self, name: &'static str, required: bool, default: Option<&'static str>) {
+src/core.rs:51         let argument = Argument::new(name, required, default);
+src/core.rs:52         self.arguments.push(argument);
+src/core.rs:53     }
+src/core.rs:55:5: 57:6 warning: method is never used: `make_formatter`, #[warn(dead_code)] on by default
+src/core.rs:55     fn make_formatter(&self) -> HelpFormatter {
+src/core.rs:56         HelpFormatter::new(80, 2)
+src/core.rs:57     }
+src/core.rs:59:5: 66:6 warning: method is never used: `format_usage`, #[warn(dead_code)] on by default
+src/core.rs:59     fn format_usage(&self, formatter: &mut HelpFormatter) {
+src/core.rs:60         let mut pieces: Vec<String> = Vec::new();
+src/core.rs:61         pieces.push("[OPTIONS]".to_string());
+src/core.rs:62         for argument in self.arguments.iter() {
+src/core.rs:63             pieces.push(argument.get_usage_piece());
+src/core.rs:64         }
+               ...
+src/core.rs:68:5: 72:6 warning: method is never used: `get_usage`, #[warn(dead_code)] on by default
+src/core.rs:68     pub fn get_usage(&self) -> String {
+src/core.rs:69         let mut formatter = self.make_formatter();
+src/core.rs:70         self.format_usage(&mut formatter);
+src/core.rs:71         formatter.getvalue()
+src/core.rs:72     }
+src/core.rs:74:5: 81:6 warning: method is never used: `format_help_text`, #[warn(dead_code)] on by default
+src/core.rs:74     fn format_help_text(&self, formatter: &mut HelpFormatter) {
+src/core.rs:75         if !self.help.is_empty() {
+src/core.rs:76             formatter.write_paragraph();
+src/core.rs:77             formatter.indent();
+src/core.rs:78             formatter.write_text(self.help.clone());
+src/core.rs:79             formatter.dedent();
+               ...
+src/core.rs:83:5: 93:6 warning: method is never used: `format_options`, #[warn(dead_code)] on by default
+src/core.rs:83     fn format_options(&self, formatter: &mut HelpFormatter) {
+src/core.rs:84         let mut opts: Vec<(String, String)> = Vec::new();
+src/core.rs:85         for option in self.get_options().iter() {
+src/core.rs:86             opts.push(option.get_help_record());
+src/core.rs:87         }
+src/core.rs:88         if !opts.is_empty() {
+               ...
+src/core.rs:95:5: 102:6 warning: method is never used: `format_epilog`, #[warn(dead_code)] on by default
+src/core.rs: 95     fn format_epilog(&self, formatter: &mut HelpFormatter) {
+src/core.rs: 96         if !self.epilog.is_empty() {
+src/core.rs: 97             formatter.write_paragraph();
+src/core.rs: 98             formatter.indent();
+src/core.rs: 99             formatter.write_text(self.epilog.clone());
+src/core.rs:100             formatter.dedent();
+                ...
+src/core.rs:104:5: 109:6 warning: method is never used: `format_help`, #[warn(dead_code)] on by default
+src/core.rs:104     fn format_help(&self, formatter: &mut HelpFormatter) {
+src/core.rs:105         self.format_usage(formatter);
+src/core.rs:106         self.format_help_text(formatter);
+src/core.rs:107         self.format_options(formatter);
+src/core.rs:108         self.format_epilog(formatter);
+src/core.rs:109     }
+src/core.rs:111:5: 115:6 warning: method is never used: `get_help`, #[warn(dead_code)] on by default
+src/core.rs:111     pub fn get_help(&self) -> String {
+src/core.rs:112         let mut formatter = self.make_formatter();
+src/core.rs:113         self.format_help(&mut formatter);
+src/core.rs:114         formatter.getvalue()
+src/core.rs:115     }
+src/core.rs:118:5: 125:6 warning: method is never used: `get_help_option`, #[warn(dead_code)] on by default
+src/core.rs:118     fn get_help_option(&self) -> Options {
+src/core.rs:119         let help_option_names = vec!["h", "help"];
+src/core.rs:120         let show_help = |params: Params| {
+src/core.rs:121             print!("{}", self.get_help());
+src/core.rs:122         };
+src/core.rs:123         return Options::new(help_option_names[0], help_option_names[1],
+                ...
+src/core.rs:128:5: 132:6 warning: method is never used: `invoke`, #[warn(dead_code)] on by default
+src/core.rs:128     pub fn invoke(&self, pragram_name: String, args: Vec<String>) {
+src/core.rs:129         let args = self.parse_args(args);
+src/core.rs:130         let callback = self.callback;
+src/core.rs:131         callback(args);
+src/core.rs:132     }
+src/core.rs:135:5: 143:6 warning: method is never used: `get_options`, #[warn(dead_code)] on by default
+src/core.rs:135     fn get_options(&self) -> Vec<Options> {
+src/core.rs:136         let mut options: Vec<Options> = Vec::new();
+src/core.rs:137         for option in self.options.iter() {
+src/core.rs:138             options.push(option.clone());
+src/core.rs:139         }
+src/core.rs:140         let help_option = self.get_help_option();
+                ...
+src/core.rs:146:5: 152:6 warning: method is never used: `make_parser`, #[warn(dead_code)] on by default
+src/core.rs:146     fn make_parser(&self) -> getopts::Options {
+src/core.rs:147         let mut parser = getopts::Options::new();
+src/core.rs:148         for option in self.get_options().iter() {
+src/core.rs:149             option.add_to_parser(&mut parser);
+src/core.rs:150         }
+src/core.rs:151         return parser;
+                ...
+src/core.rs:155:5: 157:6 warning: method is never used: `parse_args`, #[warn(dead_code)] on by default
+src/core.rs:155     fn parse_args(&self, args: Vec<String>) -> Vec<String> {
+src/core.rs:156         args
+src/core.rs:157     }
+src/core.rs:160:5: 168:6 warning: method is never used: `run`, #[warn(dead_code)] on by default
+src/core.rs:160     pub fn run(&self) {
+src/core.rs:161         let mut args = env::args();
+src/core.rs:162         let program = args.nth(0).unwrap();
+src/core.rs:163         let program_path = Path::new(&program);
+src/core.rs:164         let program_name = program_path.file_name().unwrap().to_str().unwrap();
+src/core.rs:165         // Hook for the Bash completion.
+                ...
+src/core.rs:120:13: 120:22 warning: unused variable: `show_help`, #[warn(unused_variables)] on by default
+src/core.rs:120         let show_help = |params: Params| {
+                            ^~~~~~~~~
+src/core.rs:120:26: 120:32 warning: unused variable: `params`, #[warn(unused_variables)] on by default
+src/core.rs:120         let show_help = |params: Params| {
+                                         ^~~~~~
+src/core.rs:128:26: 128:38 warning: unused variable: `pragram_name`, #[warn(unused_variables)] on by default
+src/core.rs:128     pub fn invoke(&self, pragram_name: String, args: Vec<String>) {
+                                         ^~~~~~~~~~~~
+src/types.rs:30:5: 42:6 warning: method is never used: `new`, #[warn(dead_code)] on by default
+src/types.rs:30     pub fn new(s_name: &'static str, l_name: &'static str, help: &'static str, is_flag: bool, is_bool_flag: bool,
+src/types.rs:31                multiple: bool, required: bool, default: Option<&'static str>) -> Options {
+src/types.rs:32         Options {
+src/types.rs:33             short_name: s_name,
+src/types.rs:34             long_name: l_name,
+src/types.rs:35             help: help,
+                ...
+src/types.rs:44:5: 62:6 warning: method is never used: `add_to_parser`, #[warn(dead_code)] on by default
+src/types.rs:44     pub fn add_to_parser(&self, parser: &mut getopts::Options) {
+src/types.rs:45         if self.is_flag {
+src/types.rs:46             if !self.is_bool_flag {
+src/types.rs:47                 parser.optflagopt(self.short_name, self.long_name, self.help, self.long_name);
+src/types.rs:48             } else if self.multiple {
+src/types.rs:49                 parser.optflagmulti(self.short_name, self.long_name, self.help);
+                ...
+src/types.rs:64:5: 93:6 warning: method is never used: `get_help_record`, #[warn(dead_code)] on by default
+src/types.rs:64     pub fn get_help_record(&self) -> (String, String) {
+src/types.rs:65         let mut options = String::new();
+src/types.rs:66         options.push_str("-");
+src/types.rs:67         options.push_str(self.short_name);
+src/types.rs:68         options.push_str(", ");
+src/types.rs:69         options.push_str("--");
+                ...
+src/types.rs:98:1: 102:2 warning: struct is never used: `Argument`, #[warn(dead_code)] on by default
+src/types.rs: 98 pub struct Argument {
+src/types.rs: 99     name: &'static str,
+src/types.rs:100     required: bool,
+src/types.rs:101     default: Option<&'static str>,
+src/types.rs:102 }
+src/types.rs:99:5: 99:23 warning: struct field is never used: `name`, #[warn(dead_code)] on by default
+src/types.rs:99     name: &'static str,
+                    ^~~~~~~~~~~~~~~~~~
+src/types.rs:100:5: 100:19 warning: struct field is never used: `required`, #[warn(dead_code)] on by default
+src/types.rs:100     required: bool,
+                     ^~~~~~~~~~~~~~
+src/types.rs:101:5: 101:34 warning: struct field is never used: `default`, #[warn(dead_code)] on by default
+src/types.rs:101     default: Option<&'static str>,
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/types.rs:105:5: 111:6 warning: method is never used: `new`, #[warn(dead_code)] on by default
+src/types.rs:105     pub fn new(name: &'static str, required: bool, default: Option<&'static str>) -> Argument {
+src/types.rs:106         Argument {
+src/types.rs:107             name: name,
+src/types.rs:108             required: required,
+src/types.rs:109             default: default,
+src/types.rs:110         }
+                 ...
+src/types.rs:113:5: 114:6 warning: method is never used: `add_to_parser`, #[warn(dead_code)] on by default
+src/types.rs:113     pub fn add_to_parser(&self, parser: &mut getopts::Options) {
+src/types.rs:114     }
+src/types.rs:116:5: 121:6 warning: method is never used: `get_usage_piece`, #[warn(dead_code)] on by default
+src/types.rs:116     pub fn get_usage_piece(&self) -> String {
+src/types.rs:117         match self.required {
+src/types.rs:118             true => format!("{}", self.name),
+src/types.rs:119             false => format!("[{}]", self.name),
+src/types.rs:120         }
+src/types.rs:121     }
+src/types.rs:113:33: 113:39 warning: unused variable: `parser`, #[warn(unused_variables)] on by default
+src/types.rs:113     pub fn add_to_parser(&self, parser: &mut getopts::Options) {
+                                                 ^~~~~~
+src/term.rs:14:5: 14:20 warning: unused import, #[warn(unused_imports)] on by default
+src/term.rs:14 use std::path::Path;
+                   ^~~~~~~~~~~~~~~
+src/term.rs:219:40: 219:50 warning: unused variable: `hide_input`, #[warn(unused_variables)] on by default
+src/term.rs:219 fn get_prompt_input(prompt_text: &str, hide_input: bool) -> String {
+                                                       ^~~~~~~~~~
+src/term.rs:475:13: 475:21 warning: variable does not need to be mutable, #[warn(unused_mut)] on by default
+src/term.rs:475         let mut info: String;
+                            ^~~~~~~~
+src/term.rs:575:13: 575:25 warning: variable does not need to be mutable, #[warn(unused_mut)] on by default
+src/term.rs:575         let mut filepath = tmpdir.path().clone();
+                            ^~~~~~~~~~~~
+src/formatting.rs:5:5: 5:8 warning: unused import, #[warn(unused_imports)] on by default
+src/formatting.rs:5 use std;
+                        ^~~
+src/formatting.rs:10:1: 15:2 warning: struct is never used: `HelpFormatter`, #[warn(dead_code)] on by default
+src/formatting.rs:10 pub struct HelpFormatter {
+src/formatting.rs:11     width: usize,
+src/formatting.rs:12     indent_increment: usize,
+src/formatting.rs:13     current_indent: usize,
+src/formatting.rs:14     buffer: Vec<String>,
+src/formatting.rs:15 }
+src/formatting.rs:11:5: 11:17 warning: struct field is never used: `width`, #[warn(dead_code)] on by default
+src/formatting.rs:11     width: usize,
+                         ^~~~~~~~~~~~
+src/formatting.rs:12:5: 12:28 warning: struct field is never used: `indent_increment`, #[warn(dead_code)] on by default
+src/formatting.rs:12     indent_increment: usize,
+                         ^~~~~~~~~~~~~~~~~~~~~~~
+src/formatting.rs:13:5: 13:26 warning: struct field is never used: `current_indent`, #[warn(dead_code)] on by default
+src/formatting.rs:13     current_indent: usize,
+                         ^~~~~~~~~~~~~~~~~~~~~
+src/formatting.rs:14:5: 14:24 warning: struct field is never used: `buffer`, #[warn(dead_code)] on by default
+src/formatting.rs:14     buffer: Vec<String>,
+                         ^~~~~~~~~~~~~~~~~~~
+src/formatting.rs:23:5: 30:6 warning: method is never used: `new`, #[warn(dead_code)] on by default
+src/formatting.rs:23     pub fn new(width: usize, indent_increment: usize) -> HelpFormatter {
+src/formatting.rs:24         HelpFormatter {
+src/formatting.rs:25             width: width,
+src/formatting.rs:26             indent_increment: indent_increment,
+src/formatting.rs:27             current_indent: 0,
+src/formatting.rs:28             buffer: Vec::new(),
+                     ...
+src/formatting.rs:33:5: 35:6 warning: method is never used: `indent`, #[warn(dead_code)] on by default
+src/formatting.rs:33     pub fn indent(&mut self) {
+src/formatting.rs:34         self.current_indent = self.current_indent + self.indent_increment;
+src/formatting.rs:35     }
+src/formatting.rs:38:5: 40:6 warning: method is never used: `dedent`, #[warn(dead_code)] on by default
+src/formatting.rs:38     pub fn dedent(&mut self) {
+src/formatting.rs:39         self.current_indent = self.current_indent - self.indent_increment;
+src/formatting.rs:40     }
+src/formatting.rs:43:5: 45:6 warning: method is never used: `write`, #[warn(dead_code)] on by default
+src/formatting.rs:43     pub fn write(&mut self, s: String) {
+src/formatting.rs:44         self.buffer.push(s);
+src/formatting.rs:45     }
+src/formatting.rs:48:5: 54:6 warning: method is never used: `write_paragraph`, #[warn(dead_code)] on by default
+src/formatting.rs:48     pub fn write_paragraph(&mut self) {
+src/formatting.rs:49         let mut newline = String::new();
+src/formatting.rs:50         newline.push_str("\n");
+src/formatting.rs:51         if !self.buffer.is_empty() {
+src/formatting.rs:52             self.buffer.push(newline);
+src/formatting.rs:53         }
+                     ...
+src/formatting.rs:57:5: 60:6 warning: method is never used: `write_heading`, #[warn(dead_code)] on by default
+src/formatting.rs:57     pub fn write_heading(&mut self, heading: &str) {
+src/formatting.rs:58         let current_indent = self.current_indent;
+src/formatting.rs:59         self.write(format!("{:>2$}{}\n", "", heading, current_indent));
+src/formatting.rs:60     }
+src/formatting.rs:63:5: 70:6 warning: method is never used: `write_dl`, #[warn(dead_code)] on by default
+src/formatting.rs:63     pub fn write_dl(&mut self, rows: Vec<(String, String)>) {
+src/formatting.rs:64         let col_spacing: usize = 2;
+src/formatting.rs:65         let current_indent = self.current_indent;
+src/formatting.rs:66         for &(ref first, ref second) in rows.iter() {
+src/formatting.rs:67             self.write(format!("{:>2$}{}", "", first, current_indent));
+src/formatting.rs:68             self.write(format!("{:>2$}{}\n", "", second, col_spacing));
+                     ...
+src/formatting.rs:73:5: 77:6 warning: method is never used: `enter_section`, #[warn(dead_code)] on by default
+src/formatting.rs:73     pub fn enter_section(&mut self, name: &str) {
+src/formatting.rs:74         self.write_paragraph();
+src/formatting.rs:75         self.write_heading(name);
+src/formatting.rs:76         self.indent();
+src/formatting.rs:77     }
+src/formatting.rs:80:5: 82:6 warning: method is never used: `exit_section`, #[warn(dead_code)] on by default
+src/formatting.rs:80     pub fn exit_section(&mut self) {
+src/formatting.rs:81         self.dedent();
+src/formatting.rs:82     }
+src/formatting.rs:85:5: 95:6 warning: method is never used: `write_text`, #[warn(dead_code)] on by default
+src/formatting.rs:85     pub fn write_text(&mut self, text: String) {
+src/formatting.rs:86         let text_width = max(self.width - self.current_indent, 10);
+src/formatting.rs:87         let mut indent = String::new();
+src/formatting.rs:88         for _ in 0..self.current_indent {
+src/formatting.rs:89             indent.push_str(" ");
+src/formatting.rs:90         }
+                     ...
+src/formatting.rs:98:5: 112:6 warning: method is never used: `write_usage`, #[warn(dead_code)] on by default
+src/formatting.rs: 98     pub fn write_usage(&mut self, name: &str, args: String, prefix: &str) {
+src/formatting.rs: 99         let prefix = format!("{:>2$}{}", prefix, name, self.current_indent);
+src/formatting.rs:100         let prefix_len = prefix.len();
+src/formatting.rs:101         self.write(prefix);
+src/formatting.rs:102         let text_width = max(self.width - self.current_indent - prefix_len, 10);
+src/formatting.rs:103         let mut indent = String::new();
+                      ...
+src/formatting.rs:115:5: 117:6 warning: method is never used: `getvalue`, #[warn(dead_code)] on by default
+src/formatting.rs:115     pub fn getvalue(&self) -> String {
+src/formatting.rs:116         self.buffer.concat()
+src/formatting.rs:117     }
+src/formatting.rs:123:1: 125:2 warning: function is never used: `wrap_text`, #[warn(dead_code)] on by default
+src/formatting.rs:123 fn wrap_text(text: String, width: usize, initial_indent: &str, subsequent_indent: &str) -> String {
+src/formatting.rs:124     return text;
+src/formatting.rs:125 }
+src/formatting.rs:123:28: 123:33 warning: unused variable: `width`, #[warn(unused_variables)] on by default
+src/formatting.rs:123 fn wrap_text(text: String, width: usize, initial_indent: &str, subsequent_indent: &str) -> String {
+                                                 ^~~~~
+src/formatting.rs:123:42: 123:56 warning: unused variable: `initial_indent`, #[warn(unused_variables)] on by default
+src/formatting.rs:123 fn wrap_text(text: String, width: usize, initial_indent: &str, subsequent_indent: &str) -> String {
+                                                               ^~~~~~~~~~~~~~
+src/formatting.rs:123:64: 123:81 warning: unused variable: `subsequent_indent`, #[warn(unused_variables)] on by default
+src/formatting.rs:123 fn wrap_text(text: String, width: usize, initial_indent: &str, subsequent_indent: &str) -> String {
+                                                                                     ^~~~~~~~~~~~~~~~~
+error: aborting due to previous error
+Could not compile `cli`.
+
+To learn more, run the command again with --verbose.

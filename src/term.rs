@@ -16,7 +16,7 @@ use std::fs::File;
 use self::tempdir::TempDir;
 
 use libc;
-use libc::funcs::bsd44::ioctl;
+use libc::ioctl;
 use time;
 
 pub use self::Color::{
@@ -195,7 +195,7 @@ impl fmt::Display for Style {
                 try!(f.write_str("\x1b[27m"));
             }
         }
-        try!(f.write_str(self.text.as_slice()));
+        try!(f.write_str(&self.text));
         // Currently we always reset.
         try!(f.write_str("\x1b[0m"));
 
@@ -218,7 +218,8 @@ fn build_prompt_text(text: &str, suffix: &str, show_default: bool,
 
 fn get_prompt_input(prompt_text: &str, hide_input: bool) -> String {
     print!("{}", prompt_text);
-    let input = io::stdin().read_line().ok().expect("Failed to read line");
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).ok().expect("Failed to read line");
     return input.trim_right_matches("\n").to_string();
 }
 
@@ -238,8 +239,8 @@ pub fn prompt(text: &str, default: Option<&str>, hide_input: bool, confirmation:
 
     let mut prompt_input: String;
     loop {
-        prompt_input = get_prompt_input(prompt_text.as_slice(), hide_input);
-        if prompt_input != String::from_str("") {
+        prompt_input = get_prompt_input(&prompt_text, hide_input);
+        if prompt_input != String::new() {
             break
         } else if default.is_some() {
             return default.unwrap().to_string();
@@ -252,7 +253,7 @@ pub fn prompt(text: &str, default: Option<&str>, hide_input: bool, confirmation:
     let mut confirm_input: String;
     loop {
         confirm_input = get_prompt_input("Repeat for confirmation: ", hide_input);
-        if confirm_input != String::from_str("") {
+        if confirm_input != String::new() {
             break
         }
     }
@@ -279,7 +280,7 @@ pub fn confirm(text: &str, default: bool, prompt_suffix: &str, show_default: boo
     let prompt_text = build_prompt_text(text, prompt_suffix, show_default, default_string);
 
     loop {
-        let prompt_input = get_prompt_input(prompt_text.as_slice(), false).to_ascii_lowercase();
+        let prompt_input = get_prompt_input(&prompt_text, false).to_ascii_lowercase();
         match prompt_input.trim() {
             "y" | "yes" => { return true; },
             "n" | "no"  => { return false; },
@@ -319,14 +320,14 @@ pub fn get_terminal_size() -> io::Result<(isize, isize)> {
     let r = unsafe { ioctl(libc::STDOUT_FILENO, TIOCGWINSZ, &w) };
     match r {
         0 => Ok((w.ws_col as isize, w.ws_row as isize)),
-        code => Err(io::Error::from_os_error(code)),
+        code => Err(io::Error::from_raw_os_error(code)),
     }
 }
 
 
 /// Show text via an pager.
 pub fn print_via_pager(text: &str) {
-    let mut pager = process::Command::new("less").stdin(process::Stdio::capture())
+    let mut pager = process::Command::new("less").stdin(process::Stdio::piped())
                                                  .spawn()
                                                  .unwrap_or_else(|e| { panic!("failed to spawn less: {}", e) });
     pager.stdin.as_mut().unwrap().write_all(text.as_bytes())
@@ -469,7 +470,7 @@ impl ProgressBar {
         for _ in 0..empty_length {
             bar.push(self.empty_char);
         }
-        let bar_str = str::from_utf8(bar.as_slice()).unwrap();
+        let bar_str = str::from_utf8(&bar).unwrap();
 
         let mut info: String;
         if self.finished || (current_ts() - self.start) < 1i64 {
@@ -572,8 +573,8 @@ impl Editor {
         let tmpdir = TempDir::new("cli").unwrap();
         let tmpname = "cli_eidtor".to_string() + extension;
         let mut filepath = tmpdir.path().clone();
-        filepath.push(tmpname.as_slice());
-        let filename = filepath.as_str().unwrap();
+        filepath.join(&tmpname);
+        let filename = filepath.to_str().unwrap();
         let mut tmpfile = File::create(filename).unwrap();
         tmpfile.write(text.as_bytes()).unwrap();
         tmpfile.flush().unwrap();

@@ -62,14 +62,14 @@ impl Options {
     }
 
     pub fn get_help_record(&self) -> (String, String) {
-        let mut options = String::from_str("");
+        let mut options = String::new();
         options.push_str("-");
         options.push_str(self.short_name);
         options.push_str(", ");
         options.push_str("--");
         options.push_str(self.long_name);
 
-        let mut extra = String::from_str("");
+        let mut extra = String::new();
         if self.default.is_some() {
             extra.push_str("default: ");
             extra.push_str(self.default.unwrap());

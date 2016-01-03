@@ -4,7 +4,6 @@
 
 use std;
 use std::cmp::max;
-use std::slice::SliceConcatExt;
 
 
 /// This helps with formatting text-based help pages.
@@ -47,8 +46,10 @@ impl HelpFormatter {
 
     /// Writes a paragraph into the internal buffer.
     pub fn write_paragraph(&mut self) {
+        let mut newline = String::new();
+        newline.push_str("\n");
         if !self.buffer.is_empty() {
-            self.buffer.push(String::from_str("\n"));
+            self.buffer.push(newline);
         }
     }
 
@@ -87,8 +88,10 @@ impl HelpFormatter {
         for _ in 0..self.current_indent {
             indent.push_str(" ");
         }
-        self.write(wrap_text(text, text_width, indent.as_slice(), indent.as_slice()));
-        self.write(String::from_str("\n"));
+        self.write(wrap_text(text, text_width, &indent, &indent));
+        let mut newline = String::new();
+        newline.push_str("\n");
+        self.write(newline);
     }
 
     /// Writes a usage line.
@@ -97,12 +100,15 @@ impl HelpFormatter {
         let prefix_len = prefix.len();
         self.write(prefix);
         let text_width = max(self.width - self.current_indent - prefix_len, 10);
-        let mut indent = String::from_str(" ");
+        let mut indent = String::new();
+        indent.push_str(" ");
         for _ in 0..prefix_len {
             indent.push_str(" ");
         }
-        self.write(wrap_text(args, text_width, " ", indent.as_slice()));
-        self.write(String::from_str("\n"));
+        self.write(wrap_text(args, text_width, " ", &indent));
+        let mut newline = String::new();
+        newline.push_str("\n");
+        self.write(newline);
     }
 
     /// Get buffer contents.
