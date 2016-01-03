@@ -1,6 +1,8 @@
 // Rust command line utility.
 // Copyright (c) 2015 by Shipeng Feng.
-// Licensed under the BSD License, see LICENSE for more details.
+// Originally licensed under the BSD License.
+// Copyright (c) 2016 by Shaun Gillies.
+// Licensed under the GPLv3 License, see LICENSE for more details.
 
 //! clt is a Rust crate for creating beautiful command line applications.
 
